@@ -1,0 +1,2 @@
+#include <mavlink/chibi/mavlink.h>
+using msgid_t = uint32_t;
