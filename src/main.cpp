@@ -13,15 +13,10 @@ void myCB(const mavlink_message_t *message, const mavconn::Framing framing){
 	printf("Callback executed\n");
 }
 int main(int argc, char* argv[]){
-//	try{
-//		MAVComm mavcomm(1,1);
-//	}catch(boost::system::system_error &err){
-//		printf("Error configuring serial device: %s\n",err.what());
-//	}
-	mavconn::MAVConnInterface ser(21,78);
-	ser.message_received_cb=myCB;
+	mavconn::MAVConnInterface::Ptr fcu_link;
+	fcu_link=mavconn::MAVConnInterface::open_url("serial:///dev/ttyUSB0",21,78);
+	fcu_link->message_received_cb=myCB;
 	while(true){
 		sleep(0);
 	}
-	//ser.ReceivedCb=NULL;
 }

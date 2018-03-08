@@ -128,7 +128,7 @@ void MAVConnInterface::log_recv(const char *pfx, mavlink_message_t &msg, Framing
 
 	const char *proto_version_str = (msg.magic == MAVLINK_STX) ? "v2.0" : "v1.0";
 
-	printf("%s%zu: recv: %s %4s Message-Id: %u [%u bytes] IDs: %u.%u Seq: %u",
+	printf("%s%zu: recv: %s %4s Message-Id: %u [%u bytes] IDs: %u.%u Seq: %u\n",
 			pfx, conn_id,
 			proto_version_str,
 			framing_str,
@@ -139,7 +139,7 @@ void MAVConnInterface::log_send(const char *pfx, const mavlink_message_t *msg)
 {
 	const char *proto_version_str = (msg->magic == MAVLINK_STX) ? "v2.0" : "v1.0";
 
-	printf("%s%zu: send: %s Message-Id: %u [%u bytes] IDs: %u.%u Seq: %u",
+	printf("%s%zu: send: %s Message-Id: %u [%u bytes] IDs: %u.%u Seq: %u\n",
 			pfx, conn_id,
 			proto_version_str,
 			msg->msgid, msg->len, msg->sysid, msg->compid, msg->seq);
@@ -263,7 +263,7 @@ MAVConnInterface::Ptr MAVConnInterface::open_url(std::string url,
 			proto_end.begin(), proto_end.end());
 	if (proto_it == url.end()) {
 		// looks like file path
-		printf(PFX "URL: %s: looks like file path", url.c_str());
+		printf(PFX "URL: %s: looks like file path\n", url.c_str());
 		return url_parse_serial(url, "", system_id, component_id, false);
 	}
 
@@ -287,7 +287,7 @@ MAVConnInterface::Ptr MAVConnInterface::open_url(std::string url,
 		++query_it;
 	query.assign(query_it, url.end());
 
-	printf(PFX "URL: %s: proto: %s, host: %s, path: %s, query: %s",
+	printf(PFX "URL: %s: proto: %s, host: %s, path: %s, query: %s\n",
 			url.c_str(), proto.c_str(), host.c_str(),
 			path.c_str(), query.c_str());
 
