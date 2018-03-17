@@ -8,9 +8,16 @@
 #include <unistd.h>
 #include <cstdio>
 
+#include "ros/ros.h"
+#include "std_msgs/Float32.h"
+
+ros::Publisher roll_pub;
+
 void myCB(const mavlink_message_t *message, const mavconn::Framing framing){
 	static mavlink_heartbeat_t hb;
 	static mavlink_attitude_t att;
+
+	static std_msgs::Float32 roll;
 	switch(message->msgid){
 		case MAVLINK_MSG_ID_HEARTBEAT:
 			mavlink_msg_heartbeat_decode(message,&hb);
@@ -19,6 +26,9 @@ void myCB(const mavlink_message_t *message, const mavconn::Framing framing){
 		case MAVLINK_MSG_ID_ATTITUDE:
 			mavlink_msg_attitude_decode(message,&att);
 			printf("Decoded Attitude: %d, %f, %f, %f",att.time_boot_ms,att.roll,att.pitch,att.yaw);
+			roll.data=att.roll;
+			roll_pub.publish(roll);			
+
 			break;
 		default:
 			printf("Unknown message\n");
@@ -27,6 +37,12 @@ void myCB(const mavlink_message_t *message, const mavconn::Framing framing){
 }
 
 int main(int argc, char* argv[]){
+
+	ros::init(argc,argv,"mavmaster");
+	ros::NodeHandle n;
+	
+	roll_pub = n.advertise<std_msgs::Float32>("roll",50);
+
 	mavconn::MAVConnInterface::Ptr fcu_link;
 	fcu_link=mavconn::MAVConnInterface::open_url("serial:///dev/ttyUSB0",21,78);
 
@@ -35,7 +51,8 @@ int main(int argc, char* argv[]){
 //		printf("TODO: publish to ROS here\n\n");
 //	};
 	fcu_link->message_received_cb=myCB;
-	while(true){
-		sleep(0);
-	}
+//	while(ros::ok()){
+//		sleep(0);
+//	}
+    ros::spin();
 }
