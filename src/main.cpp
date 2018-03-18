@@ -11,7 +11,9 @@
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
 
+mavconn::MAVConnInterface::Ptr fcu_link;
 ros::Publisher att_pub;
+ros::Subscriber cv_sub;
 
 void myCB(const mavlink_message_t *message, const mavconn::Framing framing){
 	static mavlink_heartbeat_t hb;
@@ -36,6 +38,15 @@ void myCB(const mavlink_message_t *message, const mavconn::Framing framing){
 	}
 }
 
+void cvCallback(const geometry_msgs::Twist& cv_msg){
+	static mavlink_message_t mav_msg;
+	mavlink_msg_attitude_pack(21,78,&mav_msg,ros::Time::now().toSec(),
+		cv_msg.linear.x,cv_msg.linear.y,cv_msg.linear.z,
+		cv_msg.angular.x,cv_msg.angular.y,cv_msg.angular.z);
+
+	fcu_link->send_message(&mav_msg);
+}
+
 int main(int argc, char* argv[]){
 
 	ros::init(argc,argv,"mavmaster");
@@ -43,12 +54,9 @@ int main(int argc, char* argv[]){
 	
 	att_pub = n.advertise<geometry_msgs::Twist>("Attitude",50);
 
-	mavconn::MAVConnInterface::Ptr fcu_link;
 	fcu_link=mavconn::MAVConnInterface::open_url("serial:///dev/ttyUSB0",21,78);
-
-//	fcu_link->message_received_cb=[](const mavlink_message_t *message, const mavconn::Framing framing){
-//		printf("Callback executed, long live Lambda\n");
-//	};
 	fcu_link->message_received_cb=myCB;
+
+	cv_sub = n.subscribe("cv_result",100,cvCallback);
     ros::spin();
 }

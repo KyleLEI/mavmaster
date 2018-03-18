@@ -17,7 +17,6 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS system)
 find_package(Threads REQUIRED)
-find_package(console_bridge REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -145,10 +144,17 @@ add_executable(mavmaster
   src/serial.cpp
 )
 
+add_executable(fakecv
+  src/fakecv.cpp
+)
+
 target_link_libraries(mavmaster 
   ${catkin_LIBRARIES}
-  pthread
   ${Boost_SYSTEM_LIBRARY}
+)
+
+target_link_libraries(fakecv
+  ${catkin_LIBRARIES}
 )
 
 ## Rename C++ executable without prefix
