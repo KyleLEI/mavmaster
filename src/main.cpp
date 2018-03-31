@@ -43,7 +43,7 @@ void cvCallback(const geometry_msgs::Twist& cv_msg){
 	mavlink_msg_attitude_pack(21,78,&mav_msg,ros::Time::now().toSec(),
 		cv_msg.linear.x,cv_msg.linear.y,cv_msg.linear.z,
 		cv_msg.angular.x,cv_msg.angular.y,cv_msg.angular.z);
-
+	mav_msg.magic = MAVLINK_STX_MAVLINK1;
 	fcu_link->send_message(&mav_msg);
 }
 
@@ -51,11 +51,17 @@ int main(int argc, char* argv[]){
 
 	ros::init(argc,argv,"mavmaster");
 	ros::NodeHandle n;
-	
-	att_pub = n.advertise<geometry_msgs::Twist>("Attitude",50);
+	att_pub = n.advertise<geometry_msgs::Twist>("Attitude",100);
 
-	fcu_link=mavconn::MAVConnInterface::open_url("serial:///dev/ttyUSB0",21,78);
-	fcu_link->message_received_cb=myCB;
+	std::string serial_port;
+	n.param<std::string>("serial_port", serial_port, "serial:///dev/ttyUSB0");
+
+	int sysID, compID;
+	n.param<int>("sysID", sysID, 21);
+	n.param<int>("compID", compID, 78);
+
+	fcu_link=mavconn::MAVConnInterface::open_url(serial_port,sysID,compID);
+	fcu_link->message_received_cb = myCB;
 
 	cv_sub = n.subscribe("cv_result",100,cvCallback);
     ros::spin();

@@ -30,7 +30,7 @@ class MAVConnSerial : public MAVConnInterface,
 	public std::enable_shared_from_this<MAVConnSerial> {
 public:
 	static constexpr auto DEFAULT_DEVICE = "/dev/ttyUSB0";
-	static constexpr auto DEFAULT_BAUDRATE = 38400;
+	static constexpr auto DEFAULT_BAUDRATE = 115200;
 
 	/**
 	 * Open and run serial link.
@@ -66,4 +66,3 @@ private:
 	void do_write(bool check_tx_state);
 };
 }	// namespace mavconn
-

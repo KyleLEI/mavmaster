@@ -51,7 +51,7 @@ namespace mavlink {
 #endif
 
 typedef struct {
-  uint32_t sz[2];
+  unsigned int sz[2];
   uint32_t counter[8];
   union {
       unsigned char save_bytes[64];

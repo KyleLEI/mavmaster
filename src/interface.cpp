@@ -87,6 +87,7 @@ void MAVConnInterface::iostat_rx_add(size_t bytes)
 	rx_total_bytes += bytes;
 }
 
+//Need to modify in order to read MAVlink V1.0
 void MAVConnInterface::parse_buffer(const char *pfx, uint8_t *buf, const size_t bufsize, size_t bytes_received)
 {
 	mavlink_status_t status;
